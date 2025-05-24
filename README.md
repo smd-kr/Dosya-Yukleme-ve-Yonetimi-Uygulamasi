@@ -13,7 +13,7 @@ Bu proje, kullanıcıların basit bir arayüz üzerinden dosya yükleme, listele
 
 - Spring Boot
 - Thymeleaf
-- HTML/CSS (temel)
+- HTML/JavaScript
 - Maven
 
 
