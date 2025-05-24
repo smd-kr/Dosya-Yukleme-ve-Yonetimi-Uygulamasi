@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dosya Yükleyici</title>
+</head>
+<body>
+<h2>Dosya Yükle</h2>
+<form id="yuklemeFormu">
+    <input type="file" name="dosya" required>
+    <button type="submit">Yükle</button>
+</form>
+<p id="mesaj"></p>
+<button onclick="cikisYap()">Çıkış Yap</button>
+<h2>Yüklenen Dosyalar</h2>
+<ul id="dosyaListesi"></ul>
+<script>
+// Sunucudan dosya listesini alır
+async function dosyalariGetir() {
+    let yanit = await fetch('/dosyalar/liste');
+    if (yanit.status === 401) {
+        window.location = "giris.html";
+        return;
+    }
+    let dosyalar = await yanit.json();
+    let ul = document.getElementById('dosyaListesi');
+    ul.innerHTML = "";
+    dosyalar.forEach(dosya => {
+        let li = document.createElement('li');
+        li.textContent = dosya + " ";
+        let btn = document.createElement('button');
+        btn.textContent = "Sil";
+        btn.onclick = async function() {
+            let sil = await fetch('/dosyalar/sil/' + dosya, {method:'DELETE'});
+            let mesaj = await sil.json();
+            document.getElementById('mesaj').innerText = mesaj.mesaj;
+            dosyalariGetir();
+        };
+        li.appendChild(btn);
+        ul.appendChild(li);
+    });
+}
+dosyalariGetir();
+
+// Dosya yükleme formu gönderildiğinde çalışır
+document.getElementById('yuklemeFormu').onsubmit = async function(e) {
+    e.preventDefault();
+    let fd = new FormData(e.target);
+    let yanit = await fetch('/dosyalar/yukle', {method:'POST', body:fd});
+    let veri = await yanit.json();
+    document.getElementById('mesaj').innerText = veri.mesaj;
+    dosyalariGetir();
+};
+
+// Oturumdan çıkış işlemini yapar
+function cikisYap() {
+    fetch('/kimlik/cikis', {method:'POST'}).then(() => window.location = "giris.html");
+}
+</script>
+</body>
+</html>

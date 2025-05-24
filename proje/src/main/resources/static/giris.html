@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Giriş Yap</title>
+</head>
+<body>
+<h2>Giriş Yap</h2>
+<form id="girisFormu">
+    Kullanıcı Adı: <input type="text" name="kullaniciAdi" required><br>
+    Şifre: <input type="password" name="sifre" required><br>
+    <button type="submit">Giriş</button>
+</form>
+<p id="mesaj"></p>
+<p>Hesabın yok mu? <a href="kayit.html">Kayıt Ol</a></p>
+<script>
+// Giriş formu gönderildiğinde çalışır
+document.getElementById('girisFormu').onsubmit = async function(e) {
+    e.preventDefault(); // Formun kendi kendine submit olmasını engeller
+    let form = e.target;
+    let fd = new FormData(form); // Formdaki verileri al
+    // Sunucuya giriş isteği gönder
+    let yanit = await fetch('/kimlik/giris', {
+        method: 'POST',
+        body: fd
+    });
+    let veri = await yanit.json();
+    document.getElementById('mesaj').innerText = veri.mesaj; // Yanıt mesajını göster
+    if (veri.mesaj === "Giris başarılı!") setTimeout(() => window.location = "index.html", 1000);
+};
+</script>
+</body>
+</html>

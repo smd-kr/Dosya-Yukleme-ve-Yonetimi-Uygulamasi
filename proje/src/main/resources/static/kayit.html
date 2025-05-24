@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Ol</title>
+</head>
+<body>
+<h2>Kayıt Ol</h2>
+<form id="kayitFormu">
+    Kullanıcı Adı: <input type="text" name="kullaniciAdi" required><br>
+    Şifre: <input type="password" name="sifre" required><br>
+    <button type="submit">Kayıt</button>
+</form>
+<p id="mesaj"></p>
+<p>Hesabın var mı? <a href="giris.html">Giriş Yap</a></p>
+<script>
+document.getElementById('kayitFormu').onsubmit = async function(e) {
+    e.preventDefault();
+    let form = e.target;
+    let fd = new FormData(form);
+    try {
+        let yanit = await fetch('/kimlik/kayit', {
+            method: 'POST',
+            body: fd
+        });
+        let veri = await yanit.json();
+        document.getElementById('mesaj').innerText = veri.mesaj || "Bilinmeyen hata oluştu!";
+        if (veri.mesaj === "Kayıt başarılı!") setTimeout(() => window.location = "giris.html", 1000);
+    } catch (err) {
+        document.getElementById('mesaj').innerText = "Sunucuya ulaşılamıyor!";
+    }
+};
+</script>
+</body>
+</html>
